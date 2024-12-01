@@ -1,0 +1,36 @@
+{
+    "projects": {
+      "frontend": {
+        "root": "apps/frontend",
+        "sourceRoot": "apps/frontend/src",
+        "targets": {
+          "build": {
+            "executor": "@nrwl/vite:build",
+            "options": {
+              "outputPath": "dist/frontend",
+              "configFile": "frontend/vite.config.ts"
+            }
+          },
+          "serve": {
+            "executor": "@nx/vite:dev-server",
+            "options": {
+              "buildTarget": "frontend:build"
+            }
+          }
+        }
+      },
+      "backend": {
+        "root": "apps/backend",
+        "sourceRoot": "apps/backend",
+        "targets": {
+          "serve": {
+            "executor": "nx:run-commands",
+            "options": {
+              "command": "source apps/backend/venv/bin/activate && python apps/backend/app.py"
+            }
+          }
+        }
+      }
+    }
+  }
+  
