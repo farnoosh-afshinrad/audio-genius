@@ -4,11 +4,22 @@
     "sourceRoot": "apps/backend",
     "projectType": "application",
     "tags": [],
+    "tasksRunnerOptions": {
+      "default": {
+        "runner": "@nx/workspace/tasks-runners/default",
+        "options": {
+          "cacheableOperations": ["build", "lint", "test", "e2e"],
+          "parallel": 3,
+          "cacheDirectory": ".nx/cache",
+          "cloud": false
+        }
+      }
+    },
     "targets": {
       "serve": {
         "executor": "nx:run-commands",
         "options": {
-          "command": "python app.py",
+          "command": "python main.py",
           "cwd": "apps/backend"
         }
       }
