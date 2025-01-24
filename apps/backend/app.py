@@ -3,7 +3,8 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 import os
 import logging
-from music_services import LastFMService, MusicBrainzService, RecommendationEngine  # Updated import
+from music_services import LastFMService, MusicBrainzService, RecommendationEngine
+from audio_processing import audio_bp
 
 # Load environment variables
 load_dotenv()
@@ -24,6 +25,10 @@ musicbrainz_service = MusicBrainzService(
 )
 recommendation_engine = RecommendationEngine(lastfm_service, musicbrainz_service)
 
+# Register the audio processing blueprint
+app.register_blueprint(audio_bp, url_prefix='/api/audio')
+
+# Existing routes
 @app.route('/api/recommendations', methods=['POST'])
 def get_recommendations():
     logger.info("Received recommendation request")
@@ -70,7 +75,7 @@ def get_recommendations():
 
     except Exception as e:
         logger.error(f"Error processing request: {e}")
-        logger.exception("Full traceback:")  # This will log the full stack trace
+        logger.exception("Full traceback:")
         return jsonify({
             'status': 'error',
             'message': str(e)
@@ -94,3 +99,13 @@ def get_genres():
             'status': 'error',
             'message': str(e)
         }), 500
+
+# Configuration for file uploads
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
+app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'temp/uploads')
+
+# Ensure upload directory exists
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
+if __name__ == '__main__':
+    app.run(debug=True)
