@@ -1,20 +1,22 @@
-import { 
-  List, 
-  ListItem, 
-  ListItemText, 
-  Paper, 
-  Typography, 
+import {
+  List,
+  ListItem,
+  ListItemText,
+  Paper,
+  Typography,
   Chip,
   Box,
   Collapse,
   IconButton,
   Button,
-  CircularProgress
+  Link,
+  CircularProgress,
 } from '@mui/material';
 import { AudioWaveform } from 'lucide-react';
 import { ChevronDown, ChevronUp, Music } from 'lucide-react';
 import { useState } from 'react';
 import * as Tone from 'tone';
+import AudioVisualization from './AudioVisualization';
 
 interface Recommendation {
   title: string;
@@ -25,7 +27,21 @@ interface Recommendation {
   tags?: string[];
 }
 
+interface AudioProcessingResponse {
+  status: string;
+  tempo: number;
+  midi_url: string;
+  melody: number[];
+  stems: {
+    vocals: string;
+    drums: string;
+    bass: string;
+    other: string;
+  };
+}
+
 interface AudioProcessingStatus {
+  stemData: {};
   isProcessing: boolean;
   error: string | null;
   midiData: any | null;
@@ -38,58 +54,57 @@ interface RecommendationsListProps {
 
 const RecommendationsList = ({ recommendations }: RecommendationsListProps) => {
   const [expandedItem, setExpandedItem] = useState<number | null>(null);
-  const [audioStatus, setAudioStatus] = useState<{ [key: number]: AudioProcessingStatus }>({});
+  const [audioStatus, setAudioStatus] = useState<{ [key: number]: any }>({});
   const [isPlaying, setIsPlaying] = useState<number | null>(null);
 
   const handleExpandClick = (index: number) => {
     setExpandedItem(expandedItem === index ? null : index);
   };
 
-  const handleProcessAudio = async (index: number, title: string, artist: string) => {
-    // Set initial processing state
-    setAudioStatus(prev => ({
+  const handleProcessAudio = async (
+    index: number,
+    title: string,
+    artist: string
+  ) => {
+    setAudioStatus((prev) => ({
       ...prev,
       [index]: {
         isProcessing: true,
         error: null,
         midiData: null,
-        melodyData: null
-      }
+        melodyData: null,
+        stemData: null,
+      },
     }));
 
     try {
-      // Call your backend API to process the audio
       const response = await fetch('http://localhost:5000/api/audio/process', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ title, artist })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, artist }),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to process audio');
-      }
+      if (!response.ok) throw new Error('Failed to process audio');
 
-      const data = await response.json();
-
-      // Update status with processed data
-      setAudioStatus(prev => ({
+      const data: AudioProcessingResponse = await response.json();
+      setAudioStatus((prev) => ({
         ...prev,
         [index]: {
           isProcessing: false,
           error: null,
-          midiData: data.midi_path,
-          melodyData: data.melody
-        }
+          midiData: data.midi_url,
+          melodyData: data.melody,
+          stemData: data.stems,
+        },
       }));
     } catch (error) {
-      setAudioStatus(prev => ({
+      setAudioStatus((prev) => ({
         ...prev,
         [index]: {
           ...prev[index],
           isProcessing: false,
-        }
+          error: error instanceof Error ? error.message : 'Processing failed',
+        },
       }));
     }
   };
@@ -98,8 +113,9 @@ const RecommendationsList = ({ recommendations }: RecommendationsListProps) => {
     if (!audioStatus[index]?.melodyData) return;
 
     if (isPlaying === index) {
-      Tone.Transport.stop();
-      Tone.Transport.cancel();
+      const transport = Tone.getTransport();
+      transport.stop();
+      transport.cancel();
       setIsPlaying(null);
       return;
     }
@@ -110,13 +126,14 @@ const RecommendationsList = ({ recommendations }: RecommendationsListProps) => {
 
     // Stop any currently playing melody
     if (isPlaying !== null) {
-      Tone.Transport.stop();
-      Tone.Transport.cancel();
+      const transport = Tone.getTransport();
+      transport.stop();
+      transport.cancel();
     }
 
     // Play the new melody
     setIsPlaying(index);
-    melody.forEach((note, i) => {
+    melody.forEach((note: Tone.Unit.Frequency, i: number) => {
       if (note !== 0) {
         synth.triggerAttackRelease(note, '8n', now + i * 0.25);
       }
@@ -135,12 +152,14 @@ const RecommendationsList = ({ recommendations }: RecommendationsListProps) => {
       </Typography>
       <List>
         {recommendations.map((rec, index) => (
-          <ListItem 
-            key={index} 
+          <ListItem
+            key={index}
             divider={index !== recommendations.length - 1}
             sx={{ flexDirection: 'column', alignItems: 'stretch' }}
           >
-            <Box sx={{ display: 'flex', width: '100%', alignItems: 'flex-start' }}>
+            <Box
+              sx={{ display: 'flex', width: '100%', alignItems: 'flex-start' }}
+            >
               <ListItemText
                 primary={rec.title}
                 secondary={
@@ -149,19 +168,19 @@ const RecommendationsList = ({ recommendations }: RecommendationsListProps) => {
                       {rec.artist}
                     </Typography>
                     <Box sx={{ mt: 1 }}>
-                      <Chip 
-                        size="small" 
+                      <Chip
+                        size="small"
                         label={`${(rec.similarity * 100).toFixed(0)}% match`}
                         color="primary"
-                        sx={{ mr: 1 }} 
+                        sx={{ mr: 1 }}
                       />
                       {rec.sources.map((source, idx) => (
-                        <Chip 
+                        <Chip
                           key={idx}
-                          size="small" 
+                          size="small"
                           label={source}
                           variant="outlined"
-                          sx={{ mr: 1 }} 
+                          sx={{ mr: 1 }}
                         />
                       ))}
                     </Box>
@@ -169,58 +188,71 @@ const RecommendationsList = ({ recommendations }: RecommendationsListProps) => {
                 }
               />
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                {!audioStatus[index] && (
-                  <Button
-                    startIcon={<Music />}
-                    variant="outlined"
-                    size="small"
-                    onClick={() => handleProcessAudio(index, rec.title, rec.artist)}
-                  >
-                    Process Audio
-                  </Button>
-                )}
-                {audioStatus[index]?.isProcessing && (
-                  <CircularProgress size={24} />
-                )}
-                {audioStatus[index]?.melodyData && (
-                  <IconButton 
-                    onClick={() => playMelody(index)}
-                    color={isPlaying === index ? "primary" : "default"}
-                  >
-                    <AudioWaveform />
-                  </IconButton>
-                )}
-                <IconButton 
-                  onClick={() => handleExpandClick(index)}
-                >
+
+                <IconButton onClick={() => handleExpandClick(index)}>
                   {expandedItem === index ? <ChevronUp /> : <ChevronDown />}
                 </IconButton>
               </Box>
             </Box>
 
             <Collapse in={expandedItem === index}>
-              <Box sx={{ mt: 2, ml: 2 }}>
-                {audioStatus[index]?.error && (
-                  <Typography color="error" variant="body2" sx={{ mb: 2 }}>
-                    Error: {audioStatus[index].error}
-                  </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                {!audioStatus[index] && (
+                  <Button
+                    startIcon={<Music />}
+                    variant="outlined"
+                    size="small"
+                    onClick={() =>
+                      handleProcessAudio(index, rec.title, rec.artist)
+                    }
+                  >
+                    Process Audio
+                  </Button>
                 )}
-
+                                {audioStatus[index]?.isProcessing && (
+                  <CircularProgress size={24} />
+                )}
                 {audioStatus[index]?.melodyData && (
+                  <>
+                    <Box sx={{ mb: 2 }}>
+                      <Typography variant="subtitle2" gutterBottom>
+                        Melody Visualization
+                      </Typography>
+                      <AudioVisualization
+                        melodyData={audioStatus[index].melodyData}
+                      />
+                    </Box>
+                  </>
+                )}
+              </Box>
+              <Box sx={{ mt: 2, ml: 2 }}>
+                {audioStatus[index]?.midiData && (
                   <Box sx={{ mb: 2 }}>
                     <Typography variant="subtitle2" gutterBottom>
-                      Melody Visualization
+                      Downloads
                     </Typography>
-                    <Box 
-                      sx={{ 
-                        height: '100px', 
-                        background: '#f5f5f5',
-                        borderRadius: 1,
-                        position: 'relative',
-                        overflow: 'hidden'
-                      }}
-                    >
-                      {/* Add melody visualization here */}
+                    <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        href={audioStatus[index].midiData}
+                        download
+                      >
+                        MIDI File
+                      </Button>
+                      {Object.entries(audioStatus[index].stemData || {}).map(
+                        ([name, url]) => (
+                          <Button
+                            key={name}
+                            size="small"
+                            variant="outlined"
+                            href={url as string }
+                            download
+                          >
+                            {name.charAt(0).toUpperCase() + name.slice(1)}
+                          </Button>
+                        )
+                      )}
                     </Box>
                   </Box>
                 )}
@@ -232,9 +264,9 @@ const RecommendationsList = ({ recommendations }: RecommendationsListProps) => {
                     </Typography>
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                       {rec.genres.map((genre, idx) => (
-                        <Chip 
+                        <Chip
                           key={idx}
-                          size="small" 
+                          size="small"
                           label={genre}
                           color="secondary"
                           variant="outlined"
@@ -251,9 +283,9 @@ const RecommendationsList = ({ recommendations }: RecommendationsListProps) => {
                     </Typography>
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                       {rec.tags.map((tag, idx) => (
-                        <Chip 
+                        <Chip
                           key={idx}
-                          size="small" 
+                          size="small"
                           label={tag}
                           variant="outlined"
                         />

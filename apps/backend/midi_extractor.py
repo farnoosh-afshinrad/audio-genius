@@ -301,7 +301,7 @@ class MidiExtractor:
                    spread: float = 0.2
                   ) -> (midiutil.MIDIFile(), list):
 
-        audio, Fs = librosa.load(audioPath)
+        audio = librosa.load(audioPath, sr=Fs)[0]
         transMat = self.__transitionMatrix(pStayNote, pStaySilence)
         priors = self.__priorProbabilities(
             audio,
