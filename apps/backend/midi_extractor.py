@@ -8,6 +8,7 @@ import math
 import json
 
 class MidiExtractor:
+
     def __init__(self):
         self.noteMap = {
             36: 'C2', 37: 'C#2', 38: 'D2', 39: 'D#2', 40: 'E2',
@@ -289,7 +290,8 @@ class MidiExtractor:
         return midi
 
     def waveToMidi(self,
-                   audioPath: str,
+                    audioPath: str,
+                   bpm: int,  # Made BPM a required parameter
                    Fs: int = 22050,
                    frameLength: int = 2048,
                    hopLength: int = 512,
@@ -301,8 +303,17 @@ class MidiExtractor:
                    spread: float = 0.2
                   ) -> (midiutil.MIDIFile(), list):
 
+        print('MIDI: Performing midi transcription...')
+        progress = tqdm(range(7))
+
         audio = librosa.load(audioPath, sr=Fs)[0]
+        progress.update(1)
+        progress.refresh()
+        
         transMat = self.__transitionMatrix(pStayNote, pStaySilence)
+        progress.update(2)
+        progress.refresh()
+
         priors = self.__priorProbabilities(
             audio,
             frameLength,
@@ -312,18 +323,30 @@ class MidiExtractor:
             onsetAcc,
             spread
         )
+        progress.update(3)
+        progress.refresh()
 
         pInit = np.zeros(transMat.shape[0])
         pInit[0] = 1
+        progress.update(4)
+        progress.refresh()
+
         states = librosa.sequence.viterbi(priors, transMat, p_init=pInit)
+        progress.update(5)
+        progress.refresh()
+
         pianoroll, melodyArray = self.__statesToPianoroll(audio,
-                                             states,
-                                             frameLength,
-                                             hopLength,
-                                             hopLength / Fs
+                                            states,
+                                            frameLength,
+                                            hopLength,
+                                            hopLength / Fs
                                             )
-        bpm = 120 # To change
-        midi = self.__pianorollToMidi(bpm, pianoroll)
+        progress.update(6)
+        progress.refresh()
+
+        midi = self.__pianorollToMidi(bpm, pianoroll)  # Use the provided BPM
+        progress.update(7)
+        progress.refresh()
 
         return midi, melodyArray
 
