@@ -16,11 +16,16 @@ logger = logging.getLogger(__name__)
 
 class SongFeaturesRetriever:
     def __init__(self, temp_dir: str):
-        logger.info("Initializing SongFeaturesRetriever")
         self.temp_dir = temp_dir
         self.midi_extractor = MidiExtractor()
         self.stem_separator = StemSeparator()
+        self._audio_cache = {}
         
+    def _load_audio(self, audio_path: str) -> Tuple[np.ndarray, int]:
+        if audio_path not in self._audio_cache:
+            y, sr = librosa.load(audio_path, sr=None)  # Use native sampling rate
+            self._audio_cache[audio_path] = (y, sr)
+        return self._audio_cache[audio_path]
     def process_song(self, audio_path: str, artist: str = None, title: str = None) -> Dict:
         """
         Main processing pipeline with enhanced error handling and logging

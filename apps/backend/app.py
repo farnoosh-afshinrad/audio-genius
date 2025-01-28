@@ -5,6 +5,7 @@ import os
 import logging
 from music_services import LastFMService, MusicBrainzService, RecommendationEngine
 from audio_processing import audio_bp
+from concurrent.futures import ThreadPoolExecutor
 
 # Load environment variables
 load_dotenv()
@@ -15,6 +16,11 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 CORS(app)
+# Initialize ThreadPoolExecutor
+executor = ThreadPoolExecutor(max_workers=4)
+
+# Add to app context
+app.executor = executor
 
 # Initialize services
 lastfm_service = LastFMService(os.getenv('LASTFM_API_KEY'))
@@ -114,6 +120,13 @@ for directory in [app.config['TEMP_AUDIO_DIR'], app.config['PROCESSED_DIR']]:
 
 # Ensure upload directory exists
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
+@app.teardown_appcontext
+def shutdown_executor(exception=None):
+    """Properly shutdown the executor when the app context is torn down"""
+    executor = getattr(app, 'executor', None)
+    if executor:
+        executor.shutdown(wait=True)
 
 if __name__ == '__main__':
     app.run(debug=True)
