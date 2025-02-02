@@ -2,11 +2,22 @@ from flask import Blueprint, request, jsonify, current_app, send_from_directory,
 from concurrent.futures import ThreadPoolExecutor
 import os
 import logging
+from flask_cors import CORS, cross_origin
 import yt_dlp
 from song_features_retriever import SongFeaturesRetriever
 
 logger = logging.getLogger(__name__)
 audio_bp = Blueprint('audio', __name__)
+
+# Enable CORS for the blueprint
+CORS(audio_bp, resources={
+    r"/process": {"origins": ["http://localhost:4200"]},
+    r"/downloads/*": {
+        "origins": ["http://localhost:4200"],
+        "methods": ["GET", "OPTIONS"],
+        "allow_headers": ["Content-Type", "If-None-Match"]
+    }
+})
 
 def safe_execute(task, timeout=3000):
     """Safely execute a task using the app's executor"""
@@ -111,13 +122,19 @@ def download_audio(search_query: str, output_dir: str) -> str:
             raise
 
 @audio_bp.route('/downloads/<filename>')
+@cross_origin()
 def download_file(filename):
     try:
-        return send_from_directory(
+        response = send_from_directory(
             current_app.config['UPLOAD_FOLDER'],
             filename,
             as_attachment=True
         )
+        # Add CORS headers explicitly
+        response.headers['Access-Control-Allow-Origin'] = 'http://localhost:4200'
+        response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, If-None-Match'
+        return response
     except Exception as e:
         logger.error(f"Error downloading file: {e}")
         return jsonify({'status': 'error', 'message': str(e)}), 500

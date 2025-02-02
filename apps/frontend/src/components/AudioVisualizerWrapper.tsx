@@ -13,6 +13,11 @@ const AudioVisualizerWrapper = ({ stemData, midiUrl, jsonUrl } : any) => {
     if (!url) return '';
     if (url.startsWith('http')) return url;
 
+    // Handle case where the URL is just a filename
+    if (!url.includes('/')) {
+          return `${API_BASE}/api/audio/downloads/${url}`;
+    }
+  
     return `${API_BASE}${url}`;
   };
 
