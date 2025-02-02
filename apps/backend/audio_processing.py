@@ -125,11 +125,28 @@ def download_audio(search_query: str, output_dir: str) -> str:
 @cross_origin()
 def download_file(filename):
     try:
-        response = send_from_directory(
-            current_app.config['UPLOAD_FOLDER'],
-            filename,
-            as_attachment=True
-        )
+        processed_dir = current_app.config['PROCESSED_DIR']
+        upload_dir = current_app.config['UPLOAD_FOLDER']
+        
+        # check in processed directory
+        if os.path.exists(os.path.join(processed_dir, filename)):
+            response = send_from_directory(
+                processed_dir,
+                filename,
+                as_attachment=True
+            )
+        elif os.path.exists(os.path.join(upload_dir, filename)):
+            response = send_from_directory(
+                upload_dir,
+                filename,
+                as_attachment=True
+            )
+        else:
+            logger.error(f"File not found: {filename}")
+            return jsonify({
+                'status': 'error', 
+                'message': f'File not found: {filename}'
+            }), 404
         # Add CORS headers explicitly
         response.headers['Access-Control-Allow-Origin'] = 'http://localhost:4200'
         response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
