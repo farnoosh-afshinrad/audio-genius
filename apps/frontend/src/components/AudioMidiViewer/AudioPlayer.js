@@ -26,7 +26,7 @@ class AudioPlayer {
 
             // Wait for player to load
             await new Promise((resolve) => {
-                player.load().then(() => {
+                player.load(urls[key]).then(() => {
                     console.log(`Loaded audio track: ${key}`);
                     resolve();
                 });
@@ -109,11 +109,6 @@ class AudioPlayer {
         // Update transport position
         this.transport.seconds = seconds;
 
-        // Seek all players
-        Object.values(this.players).forEach(player => {
-            player.seek(seconds);
-        });
-
         // Resume if was playing
         if (wasRunning) {
             this.play();
@@ -132,12 +127,6 @@ class AudioPlayer {
         this.transport.stop();
         clearInterval(this.updater);
         this.running = false;
-        
-        // Reset all players
-        Object.values(this.players).forEach(player => {
-            player.stop();
-            player.seek(0);
-        });
     }
     
     muteTrack(name) {
@@ -163,7 +152,7 @@ class AudioPlayer {
         this.midi = midi;
 
         // Create sampler for MIDI playback
-        let volume = new Tone.Volume(0).toDestination();
+        /*let volume = new Tone.Volume(0).toDestination();
         let sampler = new Tone.Sampler({
             urls: {
                 "C4": "piano-f-c4.wav"
@@ -189,7 +178,7 @@ class AudioPlayer {
                     );
                 }, note.time);
             });
-        });
+        });*/
     }
 
     cleanup() {
