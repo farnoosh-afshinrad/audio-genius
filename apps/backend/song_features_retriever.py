@@ -7,6 +7,7 @@ import torch
 import numpy as np
 from midi_extractor import MidiExtractor
 from stem_separator import StemSeparator
+import json
 
 logging.basicConfig(
     level=logging.INFO,
@@ -88,6 +89,12 @@ class SongFeaturesRetriever:
             with open(midi_path, "wb") as outfile:
                 midi.writeFile(outfile)
             logger.info(f"MIDI file saved to: {midi_path}")
+
+            # Save contour JSON
+            json_path = os.path.join(output_dir, "contour.json")
+            with open(json_path, "w") as outfile:
+                json.dump(melody, outfile)
+            logger.info(f"JSON file saved to: {json_path}")
 
             result = {
                 'tempo': tempo,
