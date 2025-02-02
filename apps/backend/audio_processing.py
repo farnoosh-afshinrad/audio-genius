@@ -148,9 +148,9 @@ def download_file(filename):
                 'message': f'File not found: {filename}'
             }), 404
         # Add CORS headers explicitly
-        response.headers['Access-Control-Allow-Origin'] = 'http://localhost:4200'
-        response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
-        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, If-None-Match'
+        #response.headers['Access-Control-Allow-Origin'] = 'http://localhost:4200'
+        #response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+        #response.headers['Access-Control-Allow-Headers'] = 'Content-Type, If-None-Match'
         return response
     except Exception as e:
         logger.error(f"Error downloading file: {e}")
