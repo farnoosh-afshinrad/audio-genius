@@ -26,6 +26,7 @@ class SongFeaturesRetriever:
             y, sr = librosa.load(audio_path, sr=None)  # Use native sampling rate
             self._audio_cache[audio_path] = (y, sr)
         return self._audio_cache[audio_path]
+    
     def process_song(self, audio_path: str, artist: str = None, title: str = None) -> Dict:
         """
         Main processing pipeline with enhanced error handling and logging
@@ -58,6 +59,7 @@ class SongFeaturesRetriever:
             # Process vocals
             logger.info("Processing vocals...")
             vocals_path = stem_paths.get('vocals')
+            logger.info(vocals_path)
             if not vocals_path or not os.path.exists(vocals_path):
                 raise ValueError("Vocals stem not found or invalid")
                 
