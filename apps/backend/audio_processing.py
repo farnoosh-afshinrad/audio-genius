@@ -10,14 +10,14 @@ logger = logging.getLogger(__name__)
 audio_bp = Blueprint('audio', __name__)
 
 # Enable CORS for the blueprint
-CORS(audio_bp, resources={
+'''CORS(audio_bp, resources={
     r"/process": {"origins": ["http://localhost:4200"]},
     r"/downloads/*": {
         "origins": ["http://localhost:4200"],
         "methods": ["GET", "OPTIONS"],
         "allow_headers": ["Content-Type", "If-None-Match"]
     }
-})
+})'''
 
 def safe_execute(task, timeout=3000):
     """Safely execute a task using the app's executor"""
@@ -148,9 +148,9 @@ def download_file(filename):
                 'message': f'File not found: {filename}'
             }), 404
         # Add CORS headers explicitly
-        response.headers['Access-Control-Allow-Origin'] = 'http://localhost:4200'
-        response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
-        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, If-None-Match'
+        #response.headers['Access-Control-Allow-Origin'] = 'http://localhost:4200'
+        #response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+        #response.headers['Access-Control-Allow-Headers'] = 'Content-Type, If-None-Match'
         return response
     except Exception as e:
         logger.error(f"Error downloading file: {e}")

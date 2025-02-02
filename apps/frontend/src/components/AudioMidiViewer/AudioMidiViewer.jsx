@@ -108,9 +108,9 @@ class AudioMidiViewer extends React.Component {
                     <div className="button-container">
 
                     </div>
-                    <button className="play-button" disabled={true}>Play</button>
-                    <button className="play-button" disabled={true}>Pause</button>
-                    <button className="play-button" disabled={true}>Stop</button>
+                    <button className="play-button play" disabled={true}>Play</button>
+                    <button className="play-button pause" disabled={true}>Pause</button>
+                    <button className="play-button stop" disabled={true}>Stop</button>
                     {
                         Object.keys(this.audioUrls).map(function(index) {
                             return <div>
