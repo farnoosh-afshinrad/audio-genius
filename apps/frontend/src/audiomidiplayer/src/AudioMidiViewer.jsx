@@ -91,6 +91,15 @@ class AudioMidiViewer extends React.Component {
                 })
             });
         });
+        // Update play button click handler
+        this.refs.current.querySelector(".play").addEventListener("click", async () => {
+            await this.AudioPlayer.play((time) => {
+                this.pianoroll.timeScrollTo(time);
+            });
+        });
+
+        // When switching songs
+        this.AudioPlayer.cleanup(); 
     }
 
     render() {
