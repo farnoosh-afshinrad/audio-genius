@@ -1,28 +1,19 @@
-
 import React, { useState, useEffect } from 'react';
-import { CircularProgress, Box, Typography } from '@mui/material';
 import AudioMidiViewerBase from './AudioMidiViewer/AudioMidiViewer';
 const AudioMidiViewer = AudioMidiViewerBase as any;
 
-
 const API_BASE = 'http://localhost:5000';
 
-const AudioVisualizerWrapper = ({ stemData, midiUrl, jsonUrl }: any) => {
+const AudioVisualizerWrapper = ({ stemData, midiUrl, jsonUrl } : any) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [validatedSettings, setValidatedSettings] = useState<any>(null);
   
-  const getFullUrl = (url: string) => {
+  const getFullUrl = (url : string) => {
     if (!url) return '';
     if (url.startsWith('http')) return url;
-    const cleanUrl = url.replace(/^\/+/, '').replace(/\/+/g, '/');
-    if (cleanUrl.startsWith('api/')) {
-      return `${API_BASE}/${cleanUrl}`;
-    }
-    if (cleanUrl.includes('downloads/')) {
-      return `${API_BASE}/api/audio/${cleanUrl}`;
-    }
-    return `${API_BASE}/api/audio/downloads/${cleanUrl}`;
+
+    return `${API_BASE}${url}`;
   };
 
   const prepareSettings = () => {
@@ -36,7 +27,7 @@ const AudioVisualizerWrapper = ({ stemData, midiUrl, jsonUrl }: any) => {
         vocals: stemData?.vocals ? getFullUrl(stemData.vocals) : ''
       },
       midi: getFullUrl(midiUrl),
-      json: getFullUrl(jsonUrl), // Use the provided jsonUrl
+      json: getFullUrl(jsonUrl),
       height: 600,
       width: 810
     };
@@ -53,7 +44,7 @@ const AudioVisualizerWrapper = ({ stemData, midiUrl, jsonUrl }: any) => {
 
         console.log('Validating MIDI URL:', settings.midi);
         
-        // First check if MIDI file exists
+        // Validate MIDI file
         const midiResponse = await fetch(settings.midi);
         if (!midiResponse.ok) {
           console.error('MIDI response:', {
@@ -64,7 +55,7 @@ const AudioVisualizerWrapper = ({ stemData, midiUrl, jsonUrl }: any) => {
           throw new Error(`MIDI file not accessible (Status: ${midiResponse.status} - ${midiResponse.statusText})`);
         }
 
-        // Check audio files that have URLs
+        // Validate audio stems
         const audioUrls = Object.values(settings.audio).filter(url => url);
         if (audioUrls.length > 0) {
           await Promise.all(
@@ -80,7 +71,7 @@ const AudioVisualizerWrapper = ({ stemData, midiUrl, jsonUrl }: any) => {
 
         setValidatedSettings(settings);
         setIsLoading(false);
-      } catch (err : any) {
+      } catch (err: any) {
         console.error('Resource validation error:', err);
         setError(err.message);
         setIsLoading(false);
@@ -88,50 +79,48 @@ const AudioVisualizerWrapper = ({ stemData, midiUrl, jsonUrl }: any) => {
     };
 
     validateResources();
-  }, [stemData, midiUrl]);
+  }, [stemData, midiUrl, jsonUrl]);
 
   if (!stemData || !midiUrl) {
     return (
-      <Box p={2}>
-        <Typography>Waiting for audio data...</Typography>
-      </Box>
+      <div className="p-4">
+        <p>Waiting for audio data...</p>
+      </div>
     );
   }
 
   if (isLoading) {
     return (
-      <Box display="flex" justifyContent="center" p={2}>
-        <CircularProgress />
-      </Box>
+      <div className="flex justify-center p-4">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <Box p={2}>
-        <Typography color="error">
-          Error: {error}
-        </Typography>
-        <Typography variant="body2" color="textSecondary">
+      <div className="p-4">
+        <p className="text-red-500">Error: {error}</p>
+        <p className="text-gray-600 text-sm mt-2">
           Please ensure all audio files are processed and available.
-        </Typography>
-        <Typography variant="caption" component="pre" className="mt-2 p-2 bg-gray-100 rounded">
+        </p>
+        <pre className="mt-4 p-4 bg-gray-100 rounded text-xs overflow-auto">
           Debug Info:
           {JSON.stringify({
             midiUrl,
             stemData,
             error
           }, null, 2)}
-        </Typography>
-      </Box>
+        </pre>
+      </div>
     );
   }
 
   if (!validatedSettings) {
     return (
-      <Box p={2}>
-        <Typography>Preparing audio visualization...</Typography>
-      </Box>
+      <div className="p-4">
+        <p>Preparing audio visualization...</p>
+      </div>
     );
   }
 
