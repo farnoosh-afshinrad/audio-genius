@@ -120,9 +120,9 @@ class AudioMidiViewer extends React.Component {
                 </div>
                 <div className="controls">
                     <div className="button-container">
-                        <button className="play" disabled>Play</button>
-                        <button className="play" disabled>Pause</button>
-                        <button className="play" disabled>Stop</button>
+                        <button className=" play-button play" disabled>Play</button>
+                        <button className="play-button pause" disabled>Pause</button>
+                        <button className="play-button stop" disabled>Stop</button>
                     </div>
                     <div className="audio-controls">
                         {Object.keys(this.audioUrls).map((index) => (
