@@ -20,7 +20,7 @@
     padding: 16px;
   }
   
-  .play-button {
+  .play {
     /* Base styles */
     display: inline-flex;
     align-items: center;
@@ -50,17 +50,17 @@
     cursor: pointer;
   }
   
-  .play-button:hover {
+  .play:hover {
     background-color: rgba(25, 118, 210, 0.04);
     border: 1px solid #1976d2;
     text-decoration: none;
   }
   
-  .play-button:active {
+  .play:active {
     box-shadow: 0 0 0 4px rgba(25, 118, 210, 0.2);
   }
   
-  .play-button:focus {
+  .play:focus {
     outline: none;
     box-shadow: 0 0 0 4px rgba(25, 118, 210, 0.2);
   }
