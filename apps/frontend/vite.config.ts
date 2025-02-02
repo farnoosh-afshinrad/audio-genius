@@ -1,5 +1,5 @@
 /// <reference types='vitest' />
-import { defineConfig } from 'vite';
+import { defineConfig, transformWithEsbuild } from 'vite';
 import react from '@vitejs/plugin-react';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import { nxCopyAssetsPlugin } from '@nx/vite/plugins/nx-copy-assets.plugin';
@@ -23,11 +23,34 @@ export default defineConfig({
     port: 4300,
     host: 'localhost',
   },
-  plugins: [react(), nxViteTsPaths(), nxCopyAssetsPlugin(['*.md'])],
+  plugins: [react(), nxViteTsPaths(), nxCopyAssetsPlugin(['*.md']),
+  {
+    name: 'treat-js-files-as-jsx',
+    async transform(code, id) {
+      if (!id.match(/src\/.*\.js$/))  return null
+
+      // Use the exposed transform from vite, instead of directly
+      // transforming with esbuild
+      return transformWithEsbuild(code, id, {
+        loader: 'jsx',
+        jsx: 'automatic',
+      })
+    },
+  },
+  ],
   // Uncomment this if you are using workers.
   // worker: {
   //  plugins: [ nxViteTsPaths() ],
   // },
+
+  optimizeDeps: {
+    force: true,
+    esbuildOptions: {
+      loader: {
+        '.js': 'jsx',
+      },
+    },
+  },
   build: {
     outDir: '../../dist/apps/frontend',
     emptyOutDir: true,

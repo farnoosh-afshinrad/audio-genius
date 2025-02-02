@@ -1,0 +1,66 @@
+.audiomidi-external-canvas {
+    position: relative;
+    overflow: scroll;
+}
+
+.audiomidi-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.audiomidi-piano-layer {
+    position: relative;
+    overflow: hidden;
+}
+
+.button-container {
+    display: flex;
+    gap: 8px;
+    padding: 16px;
+  }
+  
+  .play-button {
+    /* Base styles */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 64px;
+    padding: 4px 10px;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.75;
+    letter-spacing: 0.02857em;
+    text-transform: capitalize;
+    text-decoration: none;
+    
+    /* Border and colors */
+    color: #1976d2;
+    background-color: transparent;
+    border: 1px solid rgba(25, 118, 210, 0.5);
+    border-radius: 4px;
+    
+    /* Transitions */
+    transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
+                border-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
+                box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    
+    /* Cursor */
+    cursor: pointer;
+  }
+  
+  .play-button:hover {
+    background-color: rgba(25, 118, 210, 0.04);
+    border: 1px solid #1976d2;
+    text-decoration: none;
+  }
+  
+  .play-button:active {
+    box-shadow: 0 0 0 4px rgba(25, 118, 210, 0.2);
+  }
+  
+  .play-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(25, 118, 210, 0.2);
+  }

@@ -17,6 +17,10 @@ import { ChevronDown, ChevronUp, Music } from 'lucide-react';
 import { useState } from 'react';
 import * as Tone from 'tone';
 import AudioVisualization from './AudioVisualization';
+import AudioVisualizerWrapper from './AudioVisualizerWrapper';
+import AudioMidiViewerBase from './AudioMidiViewer/AudioMidiViewer';
+const AudioMidiViewer = AudioMidiViewerBase as any;
+
 
 interface Recommendation {
   title: string;
@@ -31,6 +35,7 @@ interface AudioProcessingResponse {
   status: string;
   tempo: number;
   midi_url: string;
+  json_url: string,
   melody: number[];
   stems: {
     vocals: string;
@@ -56,6 +61,20 @@ const RecommendationsList = ({ recommendations }: RecommendationsListProps) => {
   const [expandedItem, setExpandedItem] = useState<number | null>(null);
   const [audioStatus, setAudioStatus] = useState<{ [key: number]: any }>({});
   const [isPlaying, setIsPlaying] = useState<number | null>(null);
+
+  const settings = {
+    audio: {
+      drums: "/audio/drums.mp3",
+      bass: "/audio/bass.mp3",
+      other: "/audio/other.mp3",
+      lead: "/audio/lead_vocals.mp3",
+      backing: "/audio/backing_vocals.mp3"
+    },
+    midi: "/audio/transcription.mid",
+    json: "/audio/contour.json",
+    height: "500",
+    width: "1000"
+  };
 
   const handleExpandClick = (index: number) => {
     setExpandedItem(expandedItem === index ? null : index);
@@ -93,6 +112,7 @@ const RecommendationsList = ({ recommendations }: RecommendationsListProps) => {
           isProcessing: false,
           error: null,
           midiData: data.midi_url,
+          jsonData:data.json_url,
           melodyData: data.melody,
           stemData: data.stems,
         },
@@ -194,6 +214,7 @@ const RecommendationsList = ({ recommendations }: RecommendationsListProps) => {
                 </IconButton>
               </Box>
             </Box>
+            
 
             <Collapse in={expandedItem === index}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -209,17 +230,19 @@ const RecommendationsList = ({ recommendations }: RecommendationsListProps) => {
                     Process Audio
                   </Button>
                 )}
-                                {audioStatus[index]?.isProcessing && (
+                {audioStatus[index]?.isProcessing && (
                   <CircularProgress size={24} />
                 )}
-                {audioStatus[index]?.melodyData && (
+                {audioStatus[index]?.stemData && (                  
                   <>
                     <Box sx={{ mb: 2 }}>
                       <Typography variant="subtitle2" gutterBottom>
                         Melody Visualization
                       </Typography>
-                      <AudioVisualization
-                        melodyData={audioStatus[index].melodyData}
+                      <AudioVisualizerWrapper 
+                      stemData={audioStatus[index]?.stemData}
+                      jsonUrl={audioStatus[index]?.jsonData}
+                      midiUrl={audioStatus[index]?.midiData}
                       />
                     </Box>
                   </>

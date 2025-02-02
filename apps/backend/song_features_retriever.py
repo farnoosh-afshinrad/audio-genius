@@ -4,6 +4,7 @@ from typing import Dict, Tuple
 import logging
 from demucs.apply import apply_model
 import torch
+import traceback
 import numpy as np
 from midi_extractor import MidiExtractor
 from stem_separator import StemSeparator
@@ -99,6 +100,7 @@ class SongFeaturesRetriever:
             result = {
                 'tempo': tempo,
                 'midi_path': midi_path,
+                'json_path': json_path,
                 'melody': melody,
                 'stems': stem_paths,
                 'metadata': {
