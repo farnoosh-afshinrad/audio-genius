@@ -187,14 +187,14 @@ const RecommendationsList = ({ recommendations }: RecommendationsListProps) => {
                     <Typography variant="body2" color="text.secondary">
                       {rec.artist}
                     </Typography>
-                    <Box sx={{ mt: 1 }}>
+                    <Box sx={{ mt: 1 , display:'flex', alignItems:'center'}}>
                       <Chip
                         size="small"
                         label={`${(rec.similarity * 100).toFixed(0)}% match`}
                         color="primary"
                         sx={{ mr: 1 }}
                       />
-                      {rec.sources.map((source, idx) => (
+                      {/* {rec.sources.map((source, idx) => (
                         <Chip
                           key={idx}
                           size="small"
@@ -202,9 +202,22 @@ const RecommendationsList = ({ recommendations }: RecommendationsListProps) => {
                           variant="outlined"
                           sx={{ mr: 1 }}
                         />
+                      ))} */}
+                     {rec.genres && rec.genres.length > 0 && (
+                        <Box sx={{ my: 1 }}>
+                       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                         {rec.genres.map((genre, idx) => (
+                          <Chip
+                          key={idx}
+                          size="small"
+                          label={genre}
+                          color="secondary"
+                          variant="outlined"
+                        />
                       ))}
-                      {/* {rec.genres.map} */}
-
+                    </Box>
+                  </Box>
+                )}
 
                     </Box>
                   </Box>
@@ -279,25 +292,6 @@ const RecommendationsList = ({ recommendations }: RecommendationsListProps) => {
                           </Button>
                         )
                       )}
-                    </Box>
-                  </Box>
-                )}
-
-                {rec.genres && rec.genres.length > 0 && (
-                  <Box sx={{ mb: 2 }}>
-                    <Typography variant="subtitle2" gutterBottom>
-                      Genres
-                    </Typography>
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                      {rec.genres.map((genre, idx) => (
-                        <Chip
-                          key={idx}
-                          size="small"
-                          label={genre}
-                          color="secondary"
-                          variant="outlined"
-                        />
-                      ))}
                     </Box>
                   </Box>
                 )}

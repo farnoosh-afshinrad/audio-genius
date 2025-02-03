@@ -81,15 +81,6 @@ const MusicSearchForm = ({ onSubmit, loading = false }: MusicSearchFormProps) =>
             id="audio-file-input"
             disabled={loading}
           />
-          <label htmlFor="audio-file-input">
-            <Button 
-              component="span" 
-              variant="outlined"
-              disabled={loading}
-            >
-              Upload Audio (Optional)
-            </Button>
-          </label>
           {audioFile && (
             <Typography variant="body2" sx={{ mt: 1 }}>
               Selected file: {audioFile.name}
