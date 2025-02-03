@@ -1,10 +1,72 @@
 import { useEffect, useState } from 'react';
-import { Container, Box, Alert, Snackbar, Typography, Paper } from '@mui/material';
+import { Container, Box, Alert, Snackbar, Typography, Paper, createTheme, ThemeProvider, Card, CardHeader, CardContent } from '@mui/material';
 import MusicSearchForm from '../components/MusicSearchForm';
 import RecommendationsList from '../components/RecommendationList';
 import GenreFilter from '../components/GenreFilter';
+import { Music, Search } from 'lucide-react';
 
 import type { Recommendation } from '../types/audio';
+
+const theme = createTheme({
+  palette: {
+    mode: 'dark',
+    primary: {
+      main: '#9333ea', // Purple-600
+      light: '#a855f7',
+      dark: '#7e22ce',
+    },
+    secondary: {
+      main: '#ec4899', // Pink-500
+    },
+    background: {
+      default: '#111827', // Gray-900
+      paper: '#1f2937', // Gray-800
+    },
+    text: {
+      primary: '#fff',
+      secondary: '#9ca3af', // Gray-400
+    },
+  },
+  components: {
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          backgroundImage: 'none',
+          backgroundColor: '#1f2937', // Gray-800
+          borderColor: '#374151', // Gray-700
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+          borderRadius: 8,
+          padding: '10px 16px',
+        },
+      },
+    },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          '& .MuiOutlinedInput-root': {
+            backgroundColor: '#374151', // Gray-700
+            '& fieldset': {
+              borderColor: '#4b5563', // Gray-600
+            },
+          },
+        },
+      },
+    },
+    MuiChip: {
+      styleOverrides: {
+        root: {
+          borderRadius: 6,
+        },
+      },
+    },
+  },
+});
 
 
 function App() {
@@ -68,40 +130,99 @@ function App() {
   };
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
-      <Typography variant="h4" component="h1" gutterBottom>
-        Velody
-      </Typography>
-      
-      <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
-        <Typography variant="h6" gutterBottom>
-          Search Settings
-        </Typography>
-        <GenreFilter loading={loading} onGenresChange={handleGenresChange} />
-      </Paper>
-      
-      <MusicSearchForm onSubmit={handleSubmit} loading={loading} />
-      
-      {recommendations.length > 0 && (
-        <Box sx={{ mt: 4 }}>
-          <RecommendationsList recommendations={recommendations} />
+    <ThemeProvider theme={theme}>
+    <Box 
+      sx={{
+        minHeight: '100vh',
+        background: 'linear-gradient(180deg, #111827 0%, #1f2937 100%)',
+        py: 6
+      }}
+    >
+      <Container maxWidth="md">
+        <Box sx={{ mb: 6, display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Music size={40} color={theme.palette.primary.light} />
+          <Typography 
+            variant="h3" 
+            component="h1"
+            sx={{
+              fontWeight: 'bold',
+              background: 'linear-gradient(to right, #a855f7, #ec4899)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent'
+            }}
+          >
+            Velody
+          </Typography>
         </Box>
-      )}
 
-      <Snackbar 
-        open={!!error} 
-        autoHideDuration={6000} 
-        onClose={handleCloseError}
-      >
-        <Alert 
-          onClose={handleCloseError} 
-          severity="error" 
-          sx={{ width: '100%' }}
+        <Card elevation={3} sx={{ mb: 4 }}>
+          <CardHeader
+            title={
+              <Typography variant="h5" color="text.primary">
+                Search Settings
+              </Typography>
+            }
+            subheader={
+              <Typography variant="body2" color="text.secondary">
+                Filter your music recommendations
+              </Typography>
+            }
+          />
+          <CardContent>
+            <GenreFilter loading={loading} onGenresChange={handleGenresChange} />
+          </CardContent>
+        </Card>
+
+        <Card elevation={3} sx={{ mb: 4 }}>
+          <CardHeader
+            title={
+              <Typography variant="h5" color="text.primary">
+                Find Similar Music
+              </Typography>
+            }
+            subheader={
+              <Typography variant="body2" color="text.secondary">
+                Enter a song to get recommendations
+              </Typography>
+            }
+          />
+          <CardContent>
+            <MusicSearchForm onSubmit={handleSubmit} loading={loading} />
+          </CardContent>
+        </Card>
+
+        {recommendations.length > 0 && (
+          <Card elevation={3} sx={{ mb: 4 }}>
+            <CardHeader
+              title={
+                <Typography variant="h5" color="text.primary">
+                  Recommendations
+                </Typography>
+              }
+            />
+            <CardContent>
+              <RecommendationsList recommendations={recommendations} />
+            </CardContent>
+          </Card>
+        )}
+
+        <Snackbar 
+          open={!!error} 
+          autoHideDuration={6000} 
+          onClose={() => setError(null)}
         >
-          {error}
-        </Alert>
-      </Snackbar>
-    </Container>
+          <Alert 
+            severity="error" 
+            variant="filled"
+            onClose={() => setError(null)}
+            sx={{ width: '100%' }}
+          >
+            {error}
+          </Alert>
+        </Snackbar>
+      </Container>
+    </Box>
+  </ThemeProvider>
   );
 }
 
