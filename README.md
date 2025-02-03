@@ -13,7 +13,11 @@ Watch our application demo on YouTube to see the music recommendation and MIDI e
 *Complete pipeline showing stem separation, vocal processing, and MIDI extraction*
 
 ### MIDI Extraction Flow
+![MIDI Extraction Process](assets/Midi-extraction-Core.png)
+
+###### Onset detection
 ![MIDI Extraction Process](assets/midi-extraction.png)
+
 *Step-by-step process of MIDI note extraction from audio*
 
 ## 🎵 Overview
