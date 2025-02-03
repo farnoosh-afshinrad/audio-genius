@@ -85,7 +85,7 @@ class AudioPlayer {
     loadMidi(midi) {
         this.midi = midi;
 
-        this.midi.tracks.forEach((track) => {
+        /*this.midi.tracks.forEach((track) => {
             let volume = new Tone.Volume().toDestination();
             let sampler = new Tone.Sampler({
                 "C4":"piano-f-c4.wav"
@@ -107,7 +107,7 @@ class AudioPlayer {
                 }, startTime);
             });
             sampler.sync();
-        });
+        });*/
     }
 }
 
