@@ -169,7 +169,7 @@ function App() {
             }
           />
           <CardContent>
-            <GenreFilter loading={loading} onGenresChange={handleGenresChange} />
+            <GenreFilter onGenresChange={handleGenresChange} />
           </CardContent>
         </Card>
 
