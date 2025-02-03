@@ -203,6 +203,9 @@ const RecommendationsList = ({ recommendations }: RecommendationsListProps) => {
                           sx={{ mr: 1 }}
                         />
                       ))}
+                      {/* {rec.genres.map} */}
+
+
                     </Box>
                   </Box>
                 }
