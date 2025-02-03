@@ -133,14 +133,14 @@ class AudioPlayer {
     muteTrack(name) {
         console.log(name);
         if (this.players[name]) {
-            this.volumes[name].mute = true;
+            this.players[name].mute = true;
         }
     }
 
     unmuteTrack(name) {
         console.log(this.volumes[name]);
         if (this.players[name]) {
-            this.volumes[name].mute = false;
+            this.players[name].mute = false;
         }
     }
 

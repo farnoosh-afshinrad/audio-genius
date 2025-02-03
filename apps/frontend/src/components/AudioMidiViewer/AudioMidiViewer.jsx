@@ -21,42 +21,47 @@ class AudioMidiViewer extends React.Component {
     }
 
     async componentDidMount() {
-        let midi = await Midi.fromUrl(this.midiUrl);
-
-        this.AudioPlayer = new AudioPlayer();
-
-        this.pianoroll = new Pianoroll(
-            this.refs.current.querySelector(".pianoLayer1"),
-            this.refs.current.querySelector(".pianoLayer2"),
-            this.refs.current.querySelector(".pianoLayer3"),
-            this.refs.current.querySelector(".pianoLayer4"),
-            (position, currentScroll, maxScroll) => {
-                if(!this.AudioPlayer.running) {
-                    this.AudioPlayer.seek(position);
-                }
-
-                if(currentScroll >= maxScroll) {
-                    this.AudioPlayer.pause();
-                }
-            }
-        );
-
-        this.pianoroll.printMidiFile(midi, this.jsonUrl);
-
-        this.AudioPlayer.loadAudioFileFromURL(this.audioUrls).then(() => {
-            this.AudioPlayer.loadMidi(midi);
+        try {
+            // Initialize audio player first
+            this.AudioPlayer = new AudioPlayer();
+            await this.AudioPlayer.loadAudioFileFromURL(this.audioUrls);
             
-            //Enable controls
-            if(!this.AudioPlayer.initialized) {
-                this.AudioPlayer.initialize();
-            }
+            // Load MIDI file
+            let midi = await Midi.fromUrl(this.midiUrl);
+            await this.AudioPlayer.loadMidi(midi);
+            
+            // Initialize piano roll after MIDI is loaded
+            this.pianoroll = new Pianoroll(
+                this.refs.current.querySelector(".pianoLayer1"),
+                this.refs.current.querySelector(".pianoLayer2"),
+                this.refs.current.querySelector(".pianoLayer3"),
+                this.refs.current.querySelector(".pianoLayer4"),
+                (position, currentScroll, maxScroll) => {
+                    if(!this.AudioPlayer.running) {
+                        this.AudioPlayer.seek(position);
+                    }
 
-            this.refs.current.querySelectorAll("button").forEach((el) => {
+                    if(currentScroll >= maxScroll) {
+                        this.AudioPlayer.pause();
+                    }
+                }
+            );
+
+            // Print MIDI file to piano roll
+            await this.pianoroll.printMidiFile(midi, this.jsonUrl);
+            
+            // Initialize audio player
+            this.AudioPlayer.initialize();
+
+            // Enable controls
+            const buttons = this.refs.current.querySelectorAll("button");
+            buttons.forEach((el) => {
                 el.disabled = false;
-            }); 
+            });
 
-            this.refs.current.querySelector(".play").addEventListener("click", () => {
-                this.AudioPlayer.play((time) => {
+            // Setup event listeners
+            this.refs.current.querySelector(".play").addEventListener("click", async () => {
+                await this.AudioPlayer.play((time) => {
                     this.pianoroll.timeScrollTo(time);
                 });
             });
@@ -67,12 +72,14 @@ class AudioMidiViewer extends React.Component {
     
             this.refs.current.querySelector(".stop").addEventListener("click", () => {
                 this.AudioPlayer.stop();
+                this.pianoroll.timeScrollTo(0);
             });
 
+            // Setup audio controls
             this.refs.current.querySelectorAll("input[type='checkbox']").forEach((el) => {
                 el.addEventListener("change", () => {
-                    let name = el.name;
-                    let state = el.checked;
+                    const name = el.name;
+                    const state = el.checked;
                     
                     if(state) {
                         this.AudioPlayer.unmuteTrack(name);
@@ -84,19 +91,26 @@ class AudioMidiViewer extends React.Component {
     
             this.refs.current.querySelectorAll("input[type='range']").forEach((el) => {
                 el.addEventListener("input", () => {
-                    let name = el.name;
-                    let val = el.value;
-    
-                    this.AudioPlayer.changeVolume(name, val);
-                })
+                    const name = el.name;
+                    const value = parseFloat(el.value);
+                    this.AudioPlayer.changeVolume(name, value);
+                });
             });
-        });
+
+        } catch (error) {
+            console.error("Error initializing AudioMidiViewer:", error);
+        }
     }
 
     render() {
         return (
             <div ref={this.refs}>
-                <div style={{maxHeight: this.canvasSize.height + "px", maxWidth: this.canvasSize.width + "px", height: this.canvasSize.height + "px", width: this.canvasSize.width + "px"}} className="audiomidi-external-canvas">
+                <div style={{
+                    maxHeight: this.canvasSize.height + "px",
+                    maxWidth: this.canvasSize.width + "px",
+                    height: this.canvasSize.height + "px",
+                    width: this.canvasSize.width + "px"
+                }} className="audiomidi-external-canvas">
                     <canvas className="pianoLayer1 audiomidi-canvas" style={{zIndex:"1"}}></canvas>
                     <canvas className="pianoLayer2 audiomidi-canvas" style={{zIndex:"2"}}></canvas>
                     <div className="audiomidi-piano-layer">
@@ -104,21 +118,30 @@ class AudioMidiViewer extends React.Component {
                         <canvas className="pianoLayer4 audiomidi-canvas" style={{zIndex:"4"}}></canvas>
                     </div>
                 </div>
-                <div>
+                <div className="controls">
                     <div className="button-container">
-
+                        <button className=" play-button play" disabled>Play</button>
+                        <button className="play-button pause" disabled>Pause</button>
+                        <button className="play-button stop" disabled>Stop</button>
                     </div>
-                    <button className="play-button play" disabled={true}>Play</button>
-                    <button className="play-button pause" disabled={true}>Pause</button>
-                    <button className="play-button stop" disabled={true}>Stop</button>
-                    {
-                        Object.keys(this.audioUrls).map(function(index) {
-                            return <div>
-                                <input type="checkbox" name={index} defaultChecked/>
-                                <input type="range" name={index} defaultValue="1" min="0" max="1" step="0.01"/>
+                    <div className="audio-controls">
+                        {Object.keys(this.audioUrls).map((index) => (
+                            <div key={index} className="track-control">
+                                <label>
+                                    <input type="checkbox" name={index} defaultChecked/>
+                                    {index}
+                                </label>
+                                <input
+                                    type="range"
+                                    name={index}
+                                    defaultValue="1"
+                                    min="0"
+                                    max="1"
+                                    step="0.01"
+                                />
                             </div>
-                        })
-                    }
+                        ))}
+                    </div>
                 </div>
             </div>
         );
