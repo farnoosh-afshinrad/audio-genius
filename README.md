@@ -63,6 +63,8 @@ python --version
 ```bash
 # Install dependencies
 npm install
+npm add --global nx@latest /OR
+npx nx init
 
 # Start the frontend application
 nx serve frontend
