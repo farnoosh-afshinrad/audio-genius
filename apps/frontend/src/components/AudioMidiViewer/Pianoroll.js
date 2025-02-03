@@ -258,19 +258,19 @@ class Pianoroll {
     printSingleNote(offsetPixels, startPixel, durationPixel, velocity) {
        // Enhanced note visualization
        const noteGradient = this.ctx.createLinearGradient(0, offsetPixels, 0, offsetPixels + this.noteHeight);
-       noteGradient.addColorStop(0, `rgb(147, 51, 234), ${velocity * 0.9})`);
-       noteGradient.addColorStop(1, `rgb(147, 51, 234), ${velocity})`);
+       noteGradient.addColorStop(0, `rgba(4, 118, 208, ${velocity * 0.9})`);
+       noteGradient.addColorStop(1, `rgba(4, 118, 208, ${velocity})`);
 
        this.ctx.beginPath();
        this.ctx.lineWidth = "1";
-       this.ctx.strokeStyle = `rgb(147, 51, 234), ${velocity + 0.2})`;
+       this.ctx.strokeStyle = `rgba(4, 118, 208, ${velocity + 0.2})`;
        this.ctx.fillStyle = noteGradient;
        this.ctx.roundRect(startPixel, offsetPixels, durationPixel, this.noteHeight, 5);
        this.ctx.stroke();
        this.ctx.fill();
 
        // Add glow effect
-       this.ctx.shadowColor = 'rgb(147, 51, 234), 0.3)';
+       this.ctx.shadowColor = 'rgba(4, 118, 208, 0.3)';
        this.ctx.shadowBlur = 5;
        this.ctx.fill();
        this.ctx.shadowBlur = 0;
