@@ -73,6 +73,7 @@ class AudioMidiViewer extends React.Component {
     
             this.refs.current.querySelector(".stop").addEventListener("click", () => {
                 this.AudioPlayer.stop();
+                this.AudioPlayer.cleanup();
                 this.pianoroll.timeScrollTo(0);
             });
 

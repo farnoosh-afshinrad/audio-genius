@@ -52,9 +52,9 @@ class AudioPlayer {
             player.seek(0);
             
             // Schedule player start
-            this.transport.schedule((time) => {
-                player.start(time);
-            }, 0);
+            // this.transport.schedule((time) => {
+            //     player.start(time);
+            // }, 0);
 
             // Sync with transport
             player.sync();
@@ -191,6 +191,10 @@ class AudioPlayer {
         this.stop();
         this.transport.cancel(); // Clear all scheduled events
         this.initialized = false;
+        this.transport.schedule((time) => {
+            player.start(time);
+        }, 0);
+        
         
         // Dispose of all players and volumes
         Object.values(this.players).forEach(player => player.dispose());
