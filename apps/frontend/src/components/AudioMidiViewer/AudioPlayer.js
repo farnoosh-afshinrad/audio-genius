@@ -41,6 +41,8 @@ class AudioPlayer {
     initialize() {
         if (this.initialized) return;
 
+        this.transport.cancel();
+
         // Schedule all audio players
         for(const key of Object.keys(this.players)) {
             const player = this.players[key];
