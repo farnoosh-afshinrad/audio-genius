@@ -1,0 +1,169 @@
+.audiomidi-external-canvas {
+    position: relative;
+    overflow: scroll;
+}
+
+.audiomidi-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.audiomidi-piano-layer {
+    position: relative;
+    overflow: hidden;
+}
+
+.audio-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 15px;
+    background: #f5f5f5;
+    border-radius: 8px;
+    max-width: 100%;
+}
+
+.track-control {
+    display: grid;
+    grid-template-columns: minmax(150px, 1fr) 2fr;
+    align-items: center;
+    gap: 20px;
+    padding: 8px;
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.track-control label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+}
+
+.track-control input[type="checkbox"] {
+    margin: 0;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.track-control input[type="range"] {
+    width: 100%;
+    margin: 0;
+    cursor: pointer;
+    height: 6px;
+    border-radius: 3px;
+    background: #e0e0e0;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.track-control input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: #2196F3;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.track-control input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: #2196F3;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.track-control input[type="range"]::-webkit-slider-thumb:hover {
+    background: #1976D2;
+}
+
+.track-control input[type="range"]::-moz-range-thumb:hover {
+    background: #1976D2;
+}
+
+/* For when label text is too long */
+.track-control label span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Hover states */
+.track-control:hover {
+    background: #fafafa;
+}
+
+/* Focus states for accessibility */
+.track-control input[type="range"]:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+}
+
+.track-control input[type="checkbox"]:focus {
+    outline: 2px solid rgba(33, 150, 243, 0.2);
+    outline-offset: 2px;
+}
+
+.button-container {
+    display: flex;
+    gap: 8px;
+    padding: 16px;
+  }
+  
+  .play-button {
+    /* Base styles */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 64px;
+    padding: 4px 10px;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.75;
+    letter-spacing: 0.02857em;
+    text-transform: capitalize;
+    text-decoration: none;
+    
+    /* Border and colors */
+    color: #1976d2;
+    background-color: transparent;
+    border: 1px solid rgba(25, 118, 210, 0.5);
+    border-radius: 4px;
+    
+    /* Transitions */
+    transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
+                border-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
+                box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    
+    /* Cursor */
+    cursor: pointer;
+  }
+  
+  .play:hover {
+    background-color: rgba(25, 118, 210, 0.04);
+    border: 1px solid #1976d2;
+    text-decoration: none;
+  }
+  
+  .play:active {
+    box-shadow: 0 0 0 4px rgba(25, 118, 210, 0.2);
+  }
+  
+  .play:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(25, 118, 210, 0.2);
+  }

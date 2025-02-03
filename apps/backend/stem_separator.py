@@ -10,6 +10,7 @@ import concurrent.futures
 from functools import lru_cache
 from typing import Dict, Optional
 from torch.cuda.amp import autocast
+from audio_separator.separator import Separator
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +27,7 @@ class StemSeparator:
         self._audio_cache = {}  # Cache for loaded audio files
         logger.info(f"Initializing StemSeparator with device: {device}")
         self._load_model()  # Load model on initialization
+        self.separator = None
         
     @lru_cache(maxsize=1)  # Cache the model to avoid reloading
     def _load_model(self) -> None:
@@ -74,7 +76,7 @@ class StemSeparator:
         sf.write(stem_path, stem_data.T, sr, subtype='PCM_16')
         return stem_name, stem_path
 
-    def separate_stems(self, audio_path: str, output_dir: str) -> Dict[str, str]:
+    def separate_stems_alt(self, audio_path: str, output_dir: str) -> Dict[str, str]:
         """
         Separate audio into stems using parallel processing
         Args:
@@ -143,7 +145,7 @@ class StemSeparator:
             logger.exception("Full traceback:")
             raise
             
-    def enhance_vocals(self, vocals_path: str, output_path: str) -> str:
+    def enhance_vocals_alt(self, vocals_path: str, output_path: str) -> str:
         """
         Enhance vocals with optional processing
         """
@@ -159,6 +161,37 @@ class StemSeparator:
         except Exception as e:
             logger.error(f"Error in vocal enhancement: {e}")
             raise
+    
+    @lru_cache(maxsize=1)
+    def separate_stems(self, audio_path: str, output_dir: str) -> Dict[str, str]:
+        outputNames = {
+            "Vocals": "vocals",
+            "Drums": "drums",
+            "Bass": "bass",
+            "Other": "other",
+        }
+        
+        self.separator = Separator(output_dir=output_dir, output_format='mp3')
+
+        self.separator.load_model(model_filename='htdemucs_ft.yaml')
+        self.separator.separate(audio_path, outputNames)
+
+        return { 'vocals': os.path.join(output_dir, f'{outputNames["Vocals"]}.mp3'), 
+                'drums': os.path.join(output_dir, f'{outputNames["Drums"]}.mp3'),
+                'bass': os.path.join(output_dir, f'{outputNames["Bass"]}.mp3'),
+                'other': os.path.join(output_dir, f'{outputNames["Other"]}.mp3'),                
+                }
+
+    def enhance_vocals(self, vocals_path: str, output_dir: str) -> str:
+        outputNames = {
+            "Vocals": "lead_vocals",
+            "Instrumental": "backing_vocals",
+        }
+
+        self.separator.load_model(model_filename='6_HP-Karaoke-UVR.pth')
+        self.separator.separate(vocals_path, outputNames)
+
+        return os.path.join(output_dir, f'{outputNames["Vocals"]}.mp3')
             
     def cleanup(self) -> None:
         """

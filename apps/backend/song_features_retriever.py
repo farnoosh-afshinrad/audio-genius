@@ -4,9 +4,11 @@ from typing import Dict, Tuple
 import logging
 from demucs.apply import apply_model
 import torch
+import traceback
 import numpy as np
 from midi_extractor import MidiExtractor
 from stem_separator import StemSeparator
+import json
 
 logging.basicConfig(
     level=logging.INFO,
@@ -26,6 +28,7 @@ class SongFeaturesRetriever:
             y, sr = librosa.load(audio_path, sr=None)  # Use native sampling rate
             self._audio_cache[audio_path] = (y, sr)
         return self._audio_cache[audio_path]
+    
     def process_song(self, audio_path: str, artist: str = None, title: str = None) -> Dict:
         """
         Main processing pipeline with enhanced error handling and logging
@@ -58,6 +61,7 @@ class SongFeaturesRetriever:
             # Process vocals
             logger.info("Processing vocals...")
             vocals_path = stem_paths.get('vocals')
+            logger.info(vocals_path)
             if not vocals_path or not os.path.exists(vocals_path):
                 raise ValueError("Vocals stem not found or invalid")
                 
@@ -87,9 +91,16 @@ class SongFeaturesRetriever:
                 midi.writeFile(outfile)
             logger.info(f"MIDI file saved to: {midi_path}")
 
+            # Save contour JSON
+            json_path = os.path.join(output_dir, "contour.json")
+            with open(json_path, "w") as outfile:
+                json.dump(melody, outfile)
+            logger.info(f"JSON file saved to: {json_path}")
+
             result = {
                 'tempo': tempo,
                 'midi_path': midi_path,
+                'json_path': json_path,
                 'melody': melody,
                 'stems': stem_paths,
                 'metadata': {

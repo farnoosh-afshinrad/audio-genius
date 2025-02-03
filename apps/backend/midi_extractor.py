@@ -218,7 +218,7 @@ class MidiExtractor:
                     lastNote = librosa.midi_to_note(lastMidi)
                     currentState = onset
 
-                    melodyWave.append(self.noteMapHz[int(lastMidi)] if int(lastMidi) in self.noteMapHz else 0)
+                    melodyWave.append(self.noteMapHz[lastMidi] - self.originalPitch[i])
 
                     currentRMSSum += rms[0][i]
                     currentRMSNr += 1
@@ -228,7 +228,7 @@ class MidiExtractor:
                 if int(states_[i] % 2) == 0:
                     currentState = sustain
 
-                    melodyWave.append(self.noteMapHz[int(lastMidi)] if int(lastMidi) in self.noteMapHz else 0)
+                    melodyWave.append(self.noteMapHz[lastMidi] - self.originalPitch[i])
 
                     currentRMSSum += rms[0][i]
                     currentRMSNr += 1
@@ -241,7 +241,7 @@ class MidiExtractor:
                                    int(self.__rangeConversion(currentRMSSum/currentRMSNr, (minRMS, maxRMS), (0, 127)))
                                   ]
                     output.append(currentNote)
-                    melodyWave.append(self.noteMapHz[int(lastMidi)] if int(lastMidi) in self.noteMapHz else 0)
+                    melodyWave.append(self.noteMapHz[lastMidi] - self.originalPitch[i])
 
                     # Start new note
                     lastOnset = i * hopTime
@@ -264,7 +264,7 @@ class MidiExtractor:
                     currentRMSSum = 0
                     currentRMSNr = 0
                 else:
-                    melodyWave.append(self.noteMapHz[int(lastMidi)] if int(lastMidi) in self.noteMapHz else 0)
+                    melodyWave.append(self.noteMapHz[lastMidi] - self.originalPitch[i])
         
         melodyWave = np.nan_to_num(melodyWave).tolist()
                     

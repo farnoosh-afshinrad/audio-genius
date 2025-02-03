@@ -108,11 +108,11 @@ def get_genres():
 
 # Configuration for file uploads
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
-app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'temp/uploads')
+app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'temp', 'uploads')
 
 # Add after existing config
 app.config['TEMP_AUDIO_DIR'] = os.path.join(app.config['UPLOAD_FOLDER'], 'audio')
-app.config['PROCESSED_DIR'] = os.path.join(app.config['UPLOAD_FOLDER'], 'processed')
+app.config['PROCESSED_DIR'] = os.path.join(app.config['UPLOAD_FOLDER'], 'processed_audio')
 
 # Create necessary directories
 for directory in [app.config['TEMP_AUDIO_DIR'], app.config['PROCESSED_DIR']]:
@@ -120,13 +120,6 @@ for directory in [app.config['TEMP_AUDIO_DIR'], app.config['PROCESSED_DIR']]:
 
 # Ensure upload directory exists
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-
-@app.teardown_appcontext
-def shutdown_executor(exception=None):
-    """Properly shutdown the executor when the app context is torn down"""
-    executor = getattr(app, 'executor', None)
-    if executor:
-        executor.shutdown(wait=True)
 
 if __name__ == '__main__':
     app.run(debug=True)
