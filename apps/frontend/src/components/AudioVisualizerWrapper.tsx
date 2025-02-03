@@ -29,7 +29,9 @@ const AudioVisualizerWrapper = ({ stemData, midiUrl, jsonUrl } : any) => {
         drums: stemData?.drums ? getFullUrl(stemData.drums) : '',
         bass: stemData?.bass ? getFullUrl(stemData.bass) : '',
         other: stemData?.other ? getFullUrl(stemData.other) : '',
-        vocals: stemData?.vocals ? getFullUrl(stemData.vocals) : ''
+        backing_vocals: stemData?.backing_vocals ? getFullUrl(stemData.backing_vocals) : '',
+        lead_vocals: stemData?.lead_vocals ? getFullUrl(stemData.lead_vocals) : ''
+
       },
       midi: getFullUrl(midiUrl),
       json: getFullUrl(jsonUrl),

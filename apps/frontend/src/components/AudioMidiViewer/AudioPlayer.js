@@ -17,7 +17,7 @@ class AudioPlayer {
         this.transport.position = 0;
 
         for(const key of Object.keys(urls)) {
-            let volume = new Tone.Volume(0).toDestination();
+            let volume = new Tone.Volume().toDestination();
             let player = new Tone.Player({
                 url: urls[key],
                 loop: false,
@@ -28,12 +28,13 @@ class AudioPlayer {
             await new Promise((resolve) => {
                 player.load(urls[key]).then(() => {
                     console.log(`Loaded audio track: ${key}`);
-                    resolve();
                 });
-            });
 
-            this.players[key] = player;
-            this.volumes[key] = volume;
+                console.log(key, urls[key]);
+                this.players[key] = player;
+                this.volumes[key] = volume;
+                resolve();
+            });
         }
     }
 
@@ -130,21 +131,24 @@ class AudioPlayer {
     }
     
     muteTrack(name) {
+        console.log(name);
         if (this.players[name]) {
-            this.volumes[name].mute = true;
+            this.players[name].mute = true;
         }
     }
 
     unmuteTrack(name) {
+        console.log(this.volumes[name]);
         if (this.players[name]) {
-            this.volumes[name].mute = false;
+            this.players[name].mute = false;
         }
     }
 
     changeVolume(name, value) {
+        console.log("Setting value of " + name + " volume at " + String(value === 0 ? -Infinity : 20 * Math.log10(value)));
         if (this.volumes[name]) {
             // Convert linear value (0-1) to dB (-Infinity to 0)
-            this.volumes[name].volume.value = value === 0 ? -Infinity : 20 * Math.log10(value);
+            this.volumes[name].volume.value = (value === 0 ? -Infinity : 20 * Math.log10(value));
         }
     }
 

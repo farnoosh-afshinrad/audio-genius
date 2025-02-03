@@ -17,6 +17,21 @@ class Pianoroll {
         this.baseWidth = 100;
         this.zoomFactor = 40;
         this.maxScroll = 0;
+
+        // Add particle system for sparks
+        this.particles = [];
+        this.lastTime = 0;
+              
+        // Piano key gradients
+        this.whiteKeyGradient = this.wks.createLinearGradient(0, 0, this.baseWidth, 0);
+        this.whiteKeyGradient.addColorStop(0, '#ffffff');
+        this.whiteKeyGradient.addColorStop(0.95, '#f0f0f0');
+        this.whiteKeyGradient.addColorStop(1, '#e0e0e0');
+              
+        this.blackKeyGradient = this.bks.createLinearGradient(0, 0, this.baseWidth * 2/3, 0);
+        this.blackKeyGradient.addColorStop(0, '#000000');
+        this.blackKeyGradient.addColorStop(0.9, '#202020');
+        this.blackKeyGradient.addColorStop(1, '#404040');
         
         // Declare midi-notes
         this.notes = {
@@ -40,6 +55,9 @@ class Pianoroll {
         
         this.resize(this.canvasHeight, this.baseWidth);
 
+        // Animation frame
+        requestAnimationFrame(this.animate.bind(this));
+
         // Set midi source
         this.midi = null;
 
@@ -60,6 +78,46 @@ class Pianoroll {
             whiteKeysLayer.style.left = `${this.scrollLeft}px`;
             blackKeysLayer.style.left = `${this.scrollLeft}px`;
         });
+    }
+    // Particle system
+    createParticle(x, y, velocity) {
+        return {
+            x,
+            y,
+            vx: (Math.random() - 0.5) * 3,
+            vy: -Math.random() * 3 - 2,
+            alpha: 1,
+            color: `hsla(${200 + Math.random() * 30}, 100%, ${50 + Math.random() * 20}%, `,
+            life: 1
+        };
+    }
+    animate(time) {
+        const deltaTime = (time - this.lastTime) / 1000;
+        this.lastTime = time;
+
+        // Update and draw particles
+        this.ctx.save();
+        for (let i = this.particles.length - 1; i >= 0; i--) {
+            const particle = this.particles[i];
+            particle.x += particle.vx;
+            particle.y += particle.vy;
+            particle.vy += 0.1; // gravity
+            particle.life -= deltaTime * 2;
+            particle.alpha = Math.max(0, particle.life);
+
+            if (particle.life <= 0) {
+                this.particles.splice(i, 1);
+                continue;
+            }
+
+            this.ctx.beginPath();
+            this.ctx.fillStyle = particle.color + particle.alpha + ")";
+            this.ctx.arc(particle.x, particle.y, 2, 0, Math.PI * 2);
+            this.ctx.fill();
+        }
+        this.ctx.restore();
+
+        requestAnimationFrame(this.animate.bind(this));
     }
 
     async fetchFiles(path) {
@@ -155,34 +213,75 @@ class Pianoroll {
     printWhiteKey(whiteKeyHeight, offsetY, keyName) {
         this.wks.beginPath();
         this.wks.lineWidth = "1";
-        this.wks.strokeStyle = "darkgrey";
-        this.wks.fillStyle = "white";
-        this.wks.rect(0, offsetY, this.baseWidth, whiteKeyHeight);
-        this.wks.stroke();
+        this.wks.strokeStyle = "rgba(0, 0, 0, 0.2)";
+        this.wks.fillStyle = this.whiteKeyGradient;
+        
+        // Rounded corners for white keys
+        const radius = 3;
+        this.wks.roundRect(0, offsetY, this.baseWidth, whiteKeyHeight, [0, radius, radius, 0]);
         this.wks.fill();
+        this.wks.stroke();
 
-        this.bks.fillStyle = "grey";
-        this.bks.fillText(keyName, this.baseWidth + -20, offsetY + whiteKeyHeight/2);
+        // Key shadow effect
+        this.wks.beginPath();
+        this.wks.fillStyle = "rgba(0, 0, 0, 0.05)";
+        this.wks.fillRect(0, offsetY + whiteKeyHeight - 3, this.baseWidth, 3);
+
+        // Key label styling
+        this.bks.font = "12px Arial";
+        this.bks.fillStyle = "#555555";
+        this.bks.fillText(keyName, this.baseWidth - 25, offsetY + whiteKeyHeight/2 + 4);
     }
 
     printBlackKey(blackKeyHeight, offsetY) {
+        // Enhanced black key styling
         this.bks.beginPath();
         this.bks.lineWidth = "1";
-        this.bks.strokeStyle = "darkgrey";
-        this.bks.fillStyle = "black";
-        this.bks.rect(0, offsetY, this.baseWidth * 2/3, blackKeyHeight);
+        this.bks.strokeStyle = "rgba(0, 0, 0, 0.4)";
+        this.bks.fillStyle = this.blackKeyGradient;
+        
+        // Rounded corners for black keys
+        const radius = 3;
+        this.bks.roundRect(0, offsetY, this.baseWidth * 2/3, blackKeyHeight, [0, radius, radius, 0]);
+        this.bks.fill();
         this.bks.stroke();
+
+        // Key reflection effect
+        const reflection = this.bks.createLinearGradient(0, offsetY, 0, offsetY + blackKeyHeight);
+        reflection.addColorStop(0, "rgba(255, 255, 255, 0.1)");
+        reflection.addColorStop(0.5, "rgba(255, 255, 255, 0.05)");
+        reflection.addColorStop(1, "rgba(255, 255, 255, 0)");
+        this.bks.fillStyle = reflection;
         this.bks.fill();
     }
 
     printSingleNote(offsetPixels, startPixel, durationPixel, velocity) {
-        this.ctx.beginPath();
-        this.ctx.lineWidth = "1";
-        this.ctx.strokeStyle = "rgb(4, 118, 208)";
-        this.ctx.fillStyle = `rgba(4, 118, 208, ${velocity})`;
-        this.ctx.roundRect(startPixel, offsetPixels, durationPixel, this.noteHeight, 3);
-        this.ctx.stroke();
-        this.ctx.fill();
+       // Enhanced note visualization
+       const noteGradient = this.ctx.createLinearGradient(0, offsetPixels, 0, offsetPixels + this.noteHeight);
+       noteGradient.addColorStop(0, `rgba(4, 118, 208, ${velocity * 0.9})`);
+       noteGradient.addColorStop(1, `rgba(4, 118, 208, ${velocity})`);
+
+       this.ctx.beginPath();
+       this.ctx.lineWidth = "1";
+       this.ctx.strokeStyle = `rgba(4, 118, 208, ${velocity + 0.2})`;
+       this.ctx.fillStyle = noteGradient;
+       this.ctx.roundRect(startPixel, offsetPixels, durationPixel, this.noteHeight, 5);
+       this.ctx.stroke();
+       this.ctx.fill();
+
+       // Add glow effect
+       this.ctx.shadowColor = 'rgba(4, 118, 208, 0.3)';
+       this.ctx.shadowBlur = 5;
+       this.ctx.fill();
+       this.ctx.shadowBlur = 0;
+
+       // Create particles if note crosses the tracker
+       const trackerX = this.baseWidth;
+       if (startPixel <= trackerX && startPixel + durationPixel >= trackerX) {
+           for (let i = 0; i < 5; i++) {
+               this.particles.push(this.createParticle(trackerX, offsetPixels + this.noteHeight/2, velocity));
+           }
+       }
     }
 
     printMelodyContour(contours, note, singleStepDurationPixels, offsetX, offsetY) {
