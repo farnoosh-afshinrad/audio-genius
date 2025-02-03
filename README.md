@@ -1,82 +1,182 @@
-# AiMusicApp
+# Velody (Music Recommendation and MIDI Extraction App)
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+## 🎥 Demo
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is almost ready ✨.
+[![App Demo](https://img.shields.io/badge/YouTube-Demo-red)](https://www.youtube.com/watch?v=LKfWj7dMsFg)
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/getting-started/tutorials/react-monorepo-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+Watch our application demo on YouTube to see the music recommendation and MIDI extraction features in action.
 
-## Finish your CI setup
+## 📊 System Architecture
 
-[Click here to finish setting up your workspace!](https://cloud.nx.app/connect/bmoZS9cM7k)
+### Audio Processing Pipeline
+![Audio Processing Pipeline](assets/pipeline.png)
+*Complete pipeline showing stem separation, vocal processing, and MIDI extraction*
 
+### MIDI Extraction Flow
+![MIDI Extraction Process](assets/Midi-extraction-Core.png)
 
-## Run tasks
+###### Onset detection
+![MIDI Extraction Process](assets/midi-extraction.png)
 
-To run the dev server for your app, use:
+*Step-by-step process of MIDI note extraction from audio*
 
-```sh
-npx nx serve ai-music-app
+## 🎵 Overview
+
+A full-stack web application built with Nx monorepo architecture that provides music recommendations and MIDI extraction capabilities. The app uses LastFM and MusicBrainz APIs for music recommendations and implements advanced audio processing for MIDI conversion.
+
+## ✨ Features
+
+* Music recommendation based on artist and song input
+* Genre-based filtering
+* Audio processing and MIDI extraction
+* Piano roll visualization of extracted MIDI notes
+* Vocal and instrumental stem separation
+
+## 🛠️ Tech Stack
+
+### Frontend
+* React
+* Vite (bundler)
+* Nx (monorepo)
+
+### Backend
+* Flask (Python)
+* Audio processing libraries:
+  * MDX23C-8KFFT-InstVoc_HQ_2 (stem separation)
+  * htdemucs_ft (instrumental separation)
+  * 6_HP-Karaoke-UVR (vocal separation)
+  * librosa (audio processing)
+  * pYin (pitch detection)
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+```bash
+# Make sure you have Node.js and Python installed
+node --version
+python --version
 ```
 
-To create a production bundle:
+### Frontend Setup
 
-```sh
-npx nx build ai-music-app
+```bash
+# Install dependencies
+npm install
+npm add --global nx@latest /OR
+npx nx init
+
+# Start the frontend application
+nx serve frontend
 ```
 
-To see all available targets to run for a project, run:
+### Backend Setup
 
-```sh
-npx nx show project ai-music-app
+```bash
+# Navigate to backend directory
+cd apps/backend
+
+# Install Python dependencies
+pip install -r requirements.txt
+
+# Start the backend server
+nx serve backend
 ```
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+## 🏗️ Architecture
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+### Music Processing Pipeline
 
-## Add new projects
+1. **Stem Separation**
+   * Splits audio into instrumental and vocal components
+   * Uses MDX23C-8KFFT-InstVoc_HQ_2 model
 
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
+2. **Voice Separation**
+   * Further separates vocals into lead and backing tracks
+   * Implements 6_HP-Karaoke-UVR model
 
-Use the plugin's generator to create new projects.
+3. **MIDI Extraction**
+   * Fundamental frequency detection
+   * Onset detection
+   * Hidden Markov Model processing
+   * MIDI file generation
 
-To generate a new application, use:
+### API Integration
 
-```sh
-npx nx g @nx/react:app demo
+* **LastFM API**: 
+  * Music recommendations
+  * Metadata retrieval
+* **MusicBrainz API**: 
+  * Additional music information
+  * Genre filtering capabilities
+
+## 💻 Usage
+
+1. Enter an artist and song name in the search interface
+2. Apply genre filters if desired
+3. Select a recommended song from the results
+4. Click "Process Sound" to:
+   * Extract MIDI information
+   * View piano roll visualization
+   * See melody contour analysis
+
+## 🔧 Technical Details
+
+### MIDI Extraction Process
+
+```mermaid
+graph TD
+    A[Audio Input] --> B[pYin Algorithm]
+    B --> C[Pitch Detection]
+    C --> D[Note Sequence Prediction]
+    D --> E[MIDI Generation]
 ```
 
-To generate a new library, use:
+#### Key Components:
 
-```sh
-npx nx g @nx/react:lib mylib
-```
+* **Pitch Detection**
+  * Uses pYin algorithm
+  * Frequency range: C2 to C6
+  * Frame size: 46ms
 
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
+* **Note Processing**
+  * Hidden Markov Models for sequence prediction
+  * Onset-offset detection optimized for vocals
+  * BPM detection for timing accuracy
 
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+* **Visualization**
+  * Multi-layer canvas approach
+  * Piano roll display
+  * Melody contour analysis
 
+### Audio Processing Features
 
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+* **Stem Separation**
+  ```plaintext
+  Original Track
+  ├── Instrumental
+  │   ├── Drums
+  │   ├── Bass
+  │   └── Other
+  └── Vocals
+      ├── Lead
+      └── Backing
+  ```
 
-## Install Nx Console
+## 🤝 Contributing
 
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+## 📝 License
 
-## Useful links
+[MIT License]
 
-Learn more:
+## 🙏 Acknowledgments
 
-- [Learn more about this workspace setup](https://nx.dev/getting-started/tutorials/react-monorepo-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+* LastFM API
+* MusicBrainz API
+* Audio processing libraries maintainers
