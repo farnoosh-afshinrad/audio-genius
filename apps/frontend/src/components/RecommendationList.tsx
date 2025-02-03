@@ -12,14 +12,10 @@ import {
   Link,
   CircularProgress,
 } from '@mui/material';
-import { AudioWaveform } from 'lucide-react';
 import { ChevronDown, ChevronUp, Music } from 'lucide-react';
 import { useState } from 'react';
 import * as Tone from 'tone';
-import AudioVisualization from './AudioVisualization';
 import AudioVisualizerWrapper from './AudioVisualizerWrapper';
-import AudioMidiViewerBase from './AudioMidiViewer/AudioMidiViewer';
-const AudioMidiViewer = AudioMidiViewerBase as any;
 
 
 interface Recommendation {
