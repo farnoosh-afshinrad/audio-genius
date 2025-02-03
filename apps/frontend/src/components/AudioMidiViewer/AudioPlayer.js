@@ -30,7 +30,6 @@ class AudioPlayer {
                     console.log(`Loaded audio track: ${key}`);
                 });
 
-                console.log(key, urls[key]);
                 this.players[key] = player;
                 this.volumes[key] = volume;
                 resolve();
@@ -131,21 +130,18 @@ class AudioPlayer {
     }
     
     muteTrack(name) {
-        console.log(name);
         if (this.players[name]) {
             this.players[name].mute = true;
         }
     }
 
     unmuteTrack(name) {
-        console.log(this.volumes[name]);
         if (this.players[name]) {
             this.players[name].mute = false;
         }
     }
 
     changeVolume(name, value) {
-        console.log("Setting value of " + name + " volume at " + String(value === 0 ? -Infinity : 20 * Math.log10(value)));
         if (this.volumes[name]) {
             // Convert linear value (0-1) to dB (-Infinity to 0)
             this.volumes[name].volume.value = (value === 0 ? -Infinity : 20 * Math.log10(value));

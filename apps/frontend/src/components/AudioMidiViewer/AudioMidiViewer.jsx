@@ -24,6 +24,7 @@ class AudioMidiViewer extends React.Component {
         try {
             // Initialize audio player first
             this.AudioPlayer = new AudioPlayer();
+            this.AudioPlayer.cleanup();
             await this.AudioPlayer.loadAudioFileFromURL(this.audioUrls);
             
             // Load MIDI file
