@@ -71,7 +71,7 @@ class SongFeaturesRetriever:
             # Generate MIDI with full parameter set
             logger.info("Generating MIDI from vocals...")
             midi, melody = self.midi_extractor.waveToMidi(
-                audioPath=enhanced_vocals,
+                audioPath=enhanced_vocals['lead_vocals'],
                 bpm=int(round(tempo)),  # Convert tempo to integer
                 Fs=22050,
                 frameLength=2048,
@@ -96,6 +96,10 @@ class SongFeaturesRetriever:
             with open(json_path, "w") as outfile:
                 json.dump(melody, outfile)
             logger.info(f"JSON file saved to: {json_path}")
+
+            del stem_paths['vocals']
+            stem_paths['lead_vocals'] = enhanced_vocals['lead_vocals']
+            stem_paths['backing_vocals'] = enhanced_vocals['backing_vocals']
 
             result = {
                 'tempo': tempo,

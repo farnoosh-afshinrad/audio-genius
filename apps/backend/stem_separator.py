@@ -191,7 +191,10 @@ class StemSeparator:
         self.separator.load_model(model_filename='6_HP-Karaoke-UVR.pth')
         self.separator.separate(vocals_path, outputNames)
 
-        return os.path.join(output_dir, f'{outputNames["Vocals"]}.mp3')
+        return { 
+            'lead_vocals': os.path.join(output_dir, f'{outputNames["Vocals"]}.mp3'),
+            'backing_vocals': os.path.join(output_dir, f'{outputNames["Instrumental"]}.mp3')
+        }
             
     def cleanup(self) -> None:
         """
