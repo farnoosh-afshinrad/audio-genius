@@ -129,8 +129,11 @@ class AudioMidiViewer extends React.Component {
                         {Object.keys(this.audioUrls).map((index) => (
                             <div key={index} className="track-control">
                                 <label>
-                                    <input type="checkbox" name={index} defaultChecked/>
-                                    {index}
+                                    <label className="switch">
+                                         <input type="checkbox" name={index} defaultChecked/>
+                                         <span className="slider"></span>
+                                    </label>
+                                     <span>{index}</span>
                                 </label>
                                 <input
                                     type="range"

@@ -12,9 +12,10 @@ import {
 
 interface GenreFilterProps {
   onGenresChange: (genres: string[]) => void;
+  loading: boolean;
 }
 
-const GenreFilter = ({ onGenresChange }: GenreFilterProps) => {
+const GenreFilter = ({ onGenresChange, loading }: GenreFilterProps) => {
   const [genres, setGenres] = useState<string[]>([]);
   const [availableGenres, setAvailableGenres] = useState<string[]>([]);
 
@@ -51,7 +52,7 @@ const GenreFilter = ({ onGenresChange }: GenreFilterProps) => {
         input={<OutlinedInput label="Filter by Genres" />}
         renderValue={(selected) => (
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-            {selected.map((value) => (
+            {!loading && selected.map((value) => (
               <Chip key={value} label={value} />
             ))}
           </Box>

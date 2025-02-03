@@ -24,42 +24,102 @@
     max-width: 100%;
 }
 
+
+.audio-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    background: #fff;
+    border-radius: 4px;
+    max-width: 100%;
+    box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),
+                0px 1px 1px 0px rgba(0,0,0,0.14),
+                0px 1px 3px 0px rgba(0,0,0,0.12);
+}
+
 .track-control {
     display: grid;
     grid-template-columns: minmax(150px, 1fr) 2fr;
     align-items: center;
-    gap: 20px;
-    padding: 8px;
-    background: white;
-    border-radius: 6px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    gap: 24px;
+    padding: 8px 16px;
 }
 
 .track-control label {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 14px;
-    color: #333;
+    gap: 12px;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.43;
+    letter-spacing: 0.01071em;
+    color: rgba(0, 0, 0, 0.87);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     min-width: 0;
 }
 
-.track-control input[type="checkbox"] {
+/* Switch toggle styling */
+.track-control .switch {
+    position: relative;
+    display: inline-block;
+    width: 34px;
+    height: 18px;
     margin: 0;
-    width: 16px;
-    height: 16px;
-    cursor: pointer;
 }
 
+.track-control .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.track-control .switch .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.38);
+    transition: 0.3s;
+    border-radius: 34px;
+}
+
+.track-control .switch .slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+.track-control .switch input:checked + .slider {
+    background-color: #1976d2;
+}
+
+.track-control .switch input:checked + .slider:before {
+    transform: translateX(16px);
+}
+
+.track-control .switch input:focus + .slider {
+    box-shadow: 0 0 1px #1976d2;
+}
+
+/* Range input styling to match MUI */
 .track-control input[type="range"] {
     width: 100%;
     margin: 0;
     cursor: pointer;
-    height: 6px;
-    border-radius: 3px;
+    height: 4px;
+    border-radius: 2px;
     background: #e0e0e0;
     -webkit-appearance: none;
     appearance: none;
@@ -68,54 +128,46 @@
 .track-control input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 16px;
-    height: 16px;
-    background: #2196F3;
+    width: 12px;
+    height: 12px;
+    background: #1976d2;
     border-radius: 50%;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: box-shadow 0.2s;
+    margin-top: -4px;
 }
 
 .track-control input[type="range"]::-moz-range-thumb {
-    width: 16px;
-    height: 16px;
-    background: #2196F3;
+    width: 12px;
+    height: 12px;
+    background: #1976d2;
     border: none;
     border-radius: 50%;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: box-shadow 0.2s;
 }
 
 .track-control input[type="range"]::-webkit-slider-thumb:hover {
-    background: #1976D2;
+    box-shadow: 0 0 0 8px rgba(25, 118, 210, 0.16);
 }
 
 .track-control input[type="range"]::-moz-range-thumb:hover {
-    background: #1976D2;
+    box-shadow: 0 0 0 8px rgba(25, 118, 210, 0.16);
 }
 
-/* For when label text is too long */
-.track-control label span {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-/* Hover states */
-.track-control:hover {
-    background: #fafafa;
-}
-
-/* Focus states for accessibility */
+/* Focus states */
 .track-control input[type="range"]:focus {
     outline: none;
-    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
 }
 
-.track-control input[type="checkbox"]:focus {
-    outline: 2px solid rgba(33, 150, 243, 0.2);
-    outline-offset: 2px;
+.track-control input[type="range"]:focus::-webkit-slider-thumb {
+    box-shadow: 0 0 0 8px rgba(25, 118, 210, 0.16);
 }
+
+.track-control input[type="range"]:focus::-moz-range-thumb {
+    box-shadow: 0 0 0 8px rgba(25, 118, 210, 0.16);
+}
+
 
 .button-container {
     display: flex;

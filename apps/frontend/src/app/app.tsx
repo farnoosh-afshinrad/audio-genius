@@ -1,11 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Container, Box, Alert, Snackbar, Typography, Paper } from '@mui/material';
 import MusicSearchForm from '../components/MusicSearchForm';
 import RecommendationsList from '../components/RecommendationList';
 import GenreFilter from '../components/GenreFilter';
 
 import type { Recommendation } from '../types/audio';
-
 
 
 function App() {
@@ -40,6 +39,7 @@ function App() {
       });
 
       const result = await response.json();
+      setSelectedGenres([])
 
       if (!response.ok) {
         throw new Error(result.message || `HTTP error! status: ${response.status}`);
@@ -77,7 +77,7 @@ function App() {
         <Typography variant="h6" gutterBottom>
           Search Settings
         </Typography>
-        <GenreFilter onGenresChange={handleGenresChange} />
+        <GenreFilter loading={loading} onGenresChange={handleGenresChange} />
       </Paper>
       
       <MusicSearchForm onSubmit={handleSubmit} loading={loading} />

@@ -28,8 +28,8 @@ const MusicSearchForm = ({ onSubmit, loading = false }: MusicSearchFormProps) =>
       await onSubmit({ title, artist, audioFile });
       // Reset form only if submission was successful
       if (!loading) {
-        setTitle('');
-        setArtist('');
+        // setTitle('');
+        // setArtist('');
         setAudioFile(null);
       }
     } catch (error) {
