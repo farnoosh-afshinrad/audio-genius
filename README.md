@@ -2,7 +2,7 @@
 
 ## 🎥 Demo
 
-[![App Demo](https://img.shields.io/badge/YouTube-Demo-red)](https://www.youtube.com/watch?v=LKfWj7dMsFg)
+[![App Demo](https://img.shields.io/badge/YouTube-Demo-red)](https://www.youtube.com/watch?v=LotiRtU3TmM)
 
 Watch our application demo on YouTube to see the music recommendation and MIDI extraction features in action.
 
