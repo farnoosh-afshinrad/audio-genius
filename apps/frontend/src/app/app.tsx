@@ -70,7 +70,7 @@ function App() {
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
       <Typography variant="h4" component="h1" gutterBottom>
-        Music Recommendations
+        Velody
       </Typography>
       
       <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
